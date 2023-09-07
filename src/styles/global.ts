@@ -28,6 +28,10 @@ export const GlobalStyle = createGlobalStyle`
     font-size: 1.6rem;
   }
 
+  input {
+    border: 0;
+  }
+
   button {
     border: 0;
     border-radius: 8px;
