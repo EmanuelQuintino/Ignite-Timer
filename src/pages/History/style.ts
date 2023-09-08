@@ -23,6 +23,10 @@ export const HistoryList = styled.div`
     min-width: 600px;
   }
 
+  tr:hover {
+    filter: brightness(1.1);
+  }
+
   th {
     background: ${({ theme }) => theme["gray-600"]};
     color: ${({ theme }) => theme["gray-100"]};
