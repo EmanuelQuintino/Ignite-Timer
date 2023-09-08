@@ -32,7 +32,6 @@ export const InputBase = styled.input`
   padding: 0 0.8rem;
   border-bottom: 2px solid ${({ theme }) => theme["gray-500"]};
   font-size: 1.8rem;
-  /* font-weight: bold; */
   color: ${({ theme }) => theme["gray-100"]};
 
   &:focus {
@@ -95,11 +94,11 @@ export const StartCountdownButton = styled.button`
   transition: background 100ms;
 
   &:disabled {
-    opacity: 0.7;
+    background: ${({ theme }) => theme["green-700"]};
     cursor: not-allowed;
   }
 
   &:not(:disabled):hover {
-    background: ${({ theme }) => theme["green-700"]};
+    filter: brightness(1.1);
   }
 `;

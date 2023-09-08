@@ -8,6 +8,7 @@
 - `TypeScript`
 - `Styled-Components`
 - `React-Router-Dom`
+- `React-Hook-Form`
 
 ## Installation
 
