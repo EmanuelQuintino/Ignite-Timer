@@ -13,6 +13,12 @@ export const HomeContainer = styled.div`
     flex-direction: column;
     gap: 5.6rem;
   }
+
+  form > section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 `;
 
 export const FormContainer = styled.div`

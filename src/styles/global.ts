@@ -40,4 +40,12 @@ export const GlobalStyle = createGlobalStyle`
   button:hover {
     cursor: pointer;
   }
+
+  .inputError {
+    color: ${({ theme }) => theme["yellow-500"]};
+    display: block;
+    position: absolute;
+    font-size: 1.2rem;
+    margin-top: 1.6rem;
+  }
 `;

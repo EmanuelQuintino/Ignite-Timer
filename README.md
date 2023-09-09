@@ -9,6 +9,7 @@
 - `Styled-Components`
 - `React-Router-Dom`
 - `React-Hook-Form`
+- `Zod`
 
 ## Installation
 

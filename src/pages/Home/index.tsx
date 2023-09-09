@@ -1,5 +1,7 @@
 import { Play } from "phosphor-react";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as zod from "zod";
 
 import {
   CountdownContainer,
@@ -11,8 +13,23 @@ import {
   StartCountdownButton,
 } from "./style";
 
+const formSchemaValidation = zod.object({
+  task: zod.string().min(1, "Informe a tarefa"),
+  minutesAmount: zod
+    .number()
+    .min(5, "Mínimo de tempo é 5 minutos")
+    .max(60, "Máximo de tempo é 60 minutos"),
+});
+
 export function Home() {
-  const { register, handleSubmit, watch } = useForm();
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(formSchemaValidation),
+  });
 
   function handleSubmitNewTask(data) {
     console.log(data);
@@ -26,34 +43,48 @@ export function Home() {
     <HomeContainer>
       <form id="formTask" onSubmit={handleSubmit(handleSubmitNewTask)}>
         <FormContainer>
-          <label htmlFor="task">Vou trabalhar em</label>
-          <InputTask
-            type="text"
-            id="task"
-            placeholder="Diga qual tarefa a ser realizada"
-            list="taskSuggestion"
-            {...register("task")}
-          />
+          <section>
+            <label htmlFor="task">Vou trabalhar em</label>
+            <InputTask
+              type="text"
+              id="task"
+              placeholder="Diga qual tarefa a ser realizada"
+              list="taskSuggestion"
+              {...register("task")}
+            />
 
-          <datalist id="taskSuggestion">
-            <option value="Projeto 1" />
-            <option value="Projeto 2" />
-            <option value="Projeto 3" />
-            <option value="Projeto 4" />
-          </datalist>
+            <datalist id="taskSuggestion">
+              <option value="Projeto 1" />
+              <option value="Projeto 2" />
+              <option value="Projeto 3" />
+              <option value="Projeto 4" />
+            </datalist>
 
-          <label htmlFor="minutesAmount">durante</label>
-          <InputMinutesAmount
-            type="number"
-            id="minutesAmount"
-            placeholder="00"
-            min={5}
-            max={60}
-            step={5}
-            {...register("minutesAmount", { valueAsNumber: true })}
-          />
+            {errors.task && (
+              <span role="alert" className="inputError">
+                {errors.task.message}
+              </span>
+            )}
+          </section>
 
-          <span>minutos.</span>
+          <section>
+            <label htmlFor="minutesAmount">durante</label>
+            <InputMinutesAmount
+              type="number"
+              id="minutesAmount"
+              placeholder="00"
+              step={5}
+              {...register("minutesAmount", { valueAsNumber: true })}
+            />
+
+            <span>minutos.</span>
+
+            {errors.minutesAmount && (
+              <span role="alert" className="inputError">
+                {errors.minutesAmount.message}
+              </span>
+            )}
+          </section>
         </FormContainer>
 
         <CountdownContainer>
