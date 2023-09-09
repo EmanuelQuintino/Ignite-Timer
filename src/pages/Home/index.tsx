@@ -29,6 +29,7 @@ export function Home() {
     handleSubmit,
     watch,
     formState: { errors },
+    reset,
   } = useForm<NewTaskProps>({
     resolver: zodResolver(formSchemaValidation),
     defaultValues: {
@@ -39,6 +40,7 @@ export function Home() {
 
   function handleSubmitNewTask(data: NewTaskProps) {
     console.log(data);
+    reset();
   }
 
   const taskValue = watch("task");
@@ -79,6 +81,8 @@ export function Home() {
               type="number"
               id="minutesAmount"
               placeholder="00"
+              min={5}
+              max={60}
               step={5}
               {...register("minutesAmount", { valueAsNumber: true })}
             />
