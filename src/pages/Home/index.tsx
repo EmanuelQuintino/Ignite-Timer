@@ -2,6 +2,7 @@ import { Play } from "phosphor-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
+import { useState } from "react";
 
 import {
   CountdownContainer,
@@ -21,16 +22,25 @@ const formSchemaValidation = zod.object({
     .max(60, "Máximo de tempo é 60 minutos"),
 });
 
-type NewTaskProps = zod.infer<typeof formSchemaValidation>;
+type TaskProps = zod.infer<typeof formSchemaValidation>;
+
+type NewTaskProps = {
+  id: string;
+  task: string;
+  minutesAmount: number;
+};
 
 export function Home() {
+  const [arrayTasks, setArrayTasks] = useState<NewTaskProps[]>([]);
+  const [activeTaskID, setActiveTaskID] = useState<string | null>(null);
+
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
     reset,
-  } = useForm<NewTaskProps>({
+  } = useForm<TaskProps>({
     resolver: zodResolver(formSchemaValidation),
     defaultValues: {
       task: "",
@@ -38,14 +48,25 @@ export function Home() {
     },
   });
 
-  function handleSubmitNewTask(data: NewTaskProps) {
-    console.log(data);
+  function handleSubmitNewTask(data: TaskProps) {
+    const newTask: NewTaskProps = {
+      id: String(new Date().getTime()),
+      task: data.task,
+      minutesAmount: data.minutesAmount,
+    };
+
+    setArrayTasks((prevState) => [...prevState, newTask]);
+    setActiveTaskID(newTask.id);
     reset();
   }
 
   const taskValue = watch("task");
   const minutesAmountValue = watch("minutesAmount");
   const isSubmitDisable = !taskValue || !minutesAmountValue;
+
+  const activeTask = arrayTasks.find((task) => task.id === activeTaskID);
+
+  console.log(activeTask);
 
   return (
     <HomeContainer>
