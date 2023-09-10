@@ -2,7 +2,8 @@ import { Play } from "phosphor-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { differenceInSeconds } from "date-fns";
 
 import {
   CountdownContainer,
@@ -28,6 +29,7 @@ type NewTaskProps = {
   id: string;
   task: string;
   minutesAmount: number;
+  startDate: Date;
 };
 
 export function Home() {
@@ -54,10 +56,12 @@ export function Home() {
       id: String(new Date().getTime()),
       task: data.task,
       minutesAmount: data.minutesAmount,
+      startDate: new Date(),
     };
 
     setArrayTasks((prevState) => [...prevState, newTask]);
     setActiveTaskID(newTask.id);
+    setSecondsPassed(0);
     reset();
   }
 
@@ -71,6 +75,20 @@ export function Home() {
   const currentSeconds = activeTask ? totalSeconds - secondsPassed : 0;
   const amountMinutes = String(Math.floor(currentSeconds / 60)).padStart(2, "0");
   const amountSeconds = String(currentSeconds % 60).padStart(2, "0");
+
+  useEffect(() => {
+    let intervalID: number;
+
+    if (activeTask) {
+      intervalID = setInterval(() => {
+        setSecondsPassed(differenceInSeconds(new Date(), activeTask.startDate));
+      }, 1000);
+    }
+
+    return () => {
+      clearInterval(intervalID);
+    };
+  }, [activeTask]);
 
   return (
     <HomeContainer>

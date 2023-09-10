@@ -4,12 +4,13 @@
 
 ## Technologies
 
-- `React.js`
-- `TypeScript`
-- `Styled-Components`
-- `React-Router-Dom`
-- `React-Hook-Form`
-- `Zod`
+- `react.js`
+- `typescript`
+- `styled-components`
+- `react-router-dom`
+- `react-hook-form`
+- `zod`
+- `date-fns`
 
 ## Installation
 
