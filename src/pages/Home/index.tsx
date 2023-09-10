@@ -33,6 +33,7 @@ type NewTaskProps = {
 export function Home() {
   const [arrayTasks, setArrayTasks] = useState<NewTaskProps[]>([]);
   const [activeTaskID, setActiveTaskID] = useState<string | null>(null);
+  const [secondsPassed, setSecondsPassed] = useState(0);
 
   const {
     register,
@@ -66,7 +67,10 @@ export function Home() {
 
   const activeTask = arrayTasks.find((task) => task.id === activeTaskID);
 
-  console.log(activeTask);
+  const totalSeconds = activeTask ? activeTask.minutesAmount * 60 : 0;
+  const currentSeconds = activeTask ? totalSeconds - secondsPassed : 0;
+  const amountMinutes = String(Math.floor(currentSeconds / 60)).padStart(2, "0");
+  const amountSeconds = String(currentSeconds % 60).padStart(2, "0");
 
   return (
     <HomeContainer>
@@ -119,20 +123,16 @@ export function Home() {
         </FormContainer>
 
         <CountdownContainer>
-          <span>0</span>
-          <span>0</span>
+          <span>{amountMinutes[0]}</span>
+          <span>{amountMinutes[1]}</span>
 
           <Separator>:</Separator>
 
-          <span>0</span>
-          <span>0</span>
+          <span>{amountSeconds[0]}</span>
+          <span>{amountSeconds[1]}</span>
         </CountdownContainer>
 
-        <StartCountdownButton
-          type="submit"
-          form="formTask"
-          disabled={isSubmitDisable}
-        >
+        <StartCountdownButton type="submit" form="formTask" disabled={isSubmitDisable}>
           <Play size={24} />
           Começar
         </StartCountdownButton>
