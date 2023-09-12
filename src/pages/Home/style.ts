@@ -86,7 +86,7 @@ export const Separator = styled.div`
   overflow: hidden;
 `;
 
-export const StartCountdownButton = styled.button`
+export const BaseCountdownButton = styled.button`
   width: 100%;
   padding: 1.6rem;
   border-radius: 8px;
@@ -96,13 +96,25 @@ export const StartCountdownButton = styled.button`
   gap: 0.8rem;
   font-weight: bold;
   color: ${({ theme }) => theme["gray-100"]};
-  background: ${({ theme }) => theme["green-500"]};
-  transition: background 100ms;
 
   &:disabled {
     background: ${({ theme }) => theme["green-700"]};
     cursor: not-allowed;
   }
+`;
+
+export const StartCountdownButton = styled(BaseCountdownButton)`
+  background: ${({ theme }) => theme["green-500"]};
+  transition: background 100ms;
+
+  &:not(:disabled):hover {
+    filter: brightness(1.1);
+  }
+`;
+
+export const StopCountdownButton = styled(BaseCountdownButton)`
+  background: ${({ theme }) => theme["red-500"]};
+  transition: background 100ms;
 
   &:not(:disabled):hover {
     filter: brightness(1.1);
