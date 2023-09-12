@@ -32,6 +32,7 @@ type NewTaskProps = {
   minutesAmount: number;
   startDate: Date;
   stopDate?: Date;
+  finishDate?: Date;
 };
 
 export function Home() {
@@ -68,8 +69,8 @@ export function Home() {
   }
 
   function handleStopTask() {
-    setArrayTasks(
-      arrayTasks.map((task) => {
+    setArrayTasks((prevState) =>
+      prevState.map((task) => {
         if (task.id === activeTaskID) {
           return { ...task, stopDate: new Date() };
         } else {
@@ -92,18 +93,37 @@ export function Home() {
   const amountSeconds = String(currentSeconds % 60).padStart(2, "0");
 
   useEffect(() => {
+    function handleFinishTask() {
+      setArrayTasks((prevState) =>
+        prevState.map((task) => {
+          if (task.id === activeTaskID) {
+            return { ...task, finishDate: new Date() };
+          } else {
+            return task;
+          }
+        })
+      );
+      setActiveTaskID(null);
+    }
+
     let intervalID: number;
 
     if (activeTask) {
       intervalID = setInterval(() => {
-        setSecondsPassed(differenceInSeconds(new Date(), activeTask.startDate));
+        const secondsDiferrence = differenceInSeconds(new Date(), activeTask.startDate);
+
+        if (secondsDiferrence > totalSeconds) {
+          handleFinishTask();
+        } else {
+          setSecondsPassed(secondsDiferrence);
+        }
       }, 1000);
     }
 
     return () => {
       clearInterval(intervalID);
     };
-  }, [activeTask]);
+  }, [activeTask, totalSeconds, activeTaskID]);
 
   return (
     <HomeContainer>
