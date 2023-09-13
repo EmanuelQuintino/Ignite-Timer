@@ -5,16 +5,9 @@ import * as zod from "zod";
 import { useState, useEffect } from "react";
 import { differenceInSeconds } from "date-fns";
 
-import {
-  CountdownContainer,
-  FormContainer,
-  HomeContainer,
-  InputMinutesAmount,
-  InputTask,
-  Separator,
-  StartCountdownButton,
-  StopCountdownButton,
-} from "./style";
+import { HomeContainer, StartCountdownButton, StopCountdownButton } from "./style";
+import { NewTaskForm } from "./components/NewTaskForm";
+import { Countdown } from "./components/Countdown";
 
 const formSchemaValidation = zod.object({
   task: zod.string().min(1, "Informe a tarefa"),
@@ -128,64 +121,9 @@ export function Home() {
   return (
     <HomeContainer>
       <form id="formTask" onSubmit={handleSubmit(handleSubmitNewTask)}>
-        <FormContainer>
-          <section>
-            <label htmlFor="task">Vou trabalhar em</label>
-            <InputTask
-              type="text"
-              id="task"
-              placeholder="Diga qual tarefa a ser realizada"
-              list="taskSuggestion"
-              disabled={!!activeTask}
-              {...register("task")}
-            />
+        <NewTaskForm />
 
-            <datalist id="taskSuggestion">
-              <option value="Projeto 1" />
-              <option value="Projeto 2" />
-              <option value="Projeto 3" />
-              <option value="Projeto 4" />
-            </datalist>
-
-            {errors.task && (
-              <span role="alert" className="inputError">
-                {errors.task.message}
-              </span>
-            )}
-          </section>
-
-          <section>
-            <label htmlFor="minutesAmount">durante</label>
-            <InputMinutesAmount
-              type="number"
-              id="minutesAmount"
-              placeholder="00"
-              min={5}
-              max={60}
-              step={5}
-              disabled={!!activeTask}
-              {...register("minutesAmount", { valueAsNumber: true })}
-            />
-
-            <span>minutos.</span>
-
-            {errors.minutesAmount && (
-              <span role="alert" className="inputError">
-                {errors.minutesAmount.message}
-              </span>
-            )}
-          </section>
-        </FormContainer>
-
-        <CountdownContainer>
-          <span>{amountMinutes[0]}</span>
-          <span>{amountMinutes[1]}</span>
-
-          <Separator>:</Separator>
-
-          <span>{amountSeconds[0]}</span>
-          <span>{amountSeconds[1]}</span>
-        </CountdownContainer>
+        <Countdown />
 
         {activeTask ? (
           <StopCountdownButton type="button" onClick={handleStopTask}>
