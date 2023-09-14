@@ -1,8 +1,9 @@
-import { HandPalm, Play } from "phosphor-react";
-import { useState, useEffect, createContext } from "react";
-import { differenceInSeconds } from "date-fns";
-
 import { HomeContainer, StartCountdownButton, StopCountdownButton } from "./style";
+import { HandPalm, Play } from "phosphor-react";
+import { useState, createContext } from "react";
+import { useForm, FormProvider } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as zod from "zod";
 import { NewTaskForm } from "./components/NewTaskForm";
 import { Countdown } from "./components/Countdown";
 
@@ -19,6 +20,8 @@ type TaskContextTypes = {
   activeTask: NewTaskProps | undefined;
   activeTaskID: string | null;
   markCurrentTaskAsFinished: () => void;
+  secondsPassed: number;
+  setAmountSecondsPassed: (seconds: number) => void;
 };
 
 export const TaskContext = createContext({} as TaskContextTypes);
@@ -26,6 +29,27 @@ export const TaskContext = createContext({} as TaskContextTypes);
 export function Home() {
   const [arrayTasks, setArrayTasks] = useState<NewTaskProps[]>([]);
   const [activeTaskID, setActiveTaskID] = useState<string | null>(null);
+  const [secondsPassed, setSecondsPassed] = useState(0);
+
+  const formSchemaValidation = zod.object({
+    task: zod.string().min(1, "Informe a tarefa"),
+    minutesAmount: zod
+      .number()
+      .min(5, "Mínimo de tempo é 5 minutos")
+      .max(60, "Máximo de tempo é 60 minutos"),
+  });
+
+  type TaskProps = zod.infer<typeof formSchemaValidation>;
+
+  const newTaskForm = useForm<TaskProps>({
+    resolver: zodResolver(formSchemaValidation),
+    defaultValues: {
+      task: "",
+      minutesAmount: 0,
+    },
+  });
+
+  const { handleSubmit, watch, reset } = newTaskForm;
 
   function handleSubmitNewTask(data: TaskProps) {
     const newTask: NewTaskProps = {
@@ -67,6 +91,10 @@ export function Home() {
     setActiveTaskID(null);
   }
 
+  function setAmountSecondsPassed(seconds: number) {
+    setSecondsPassed(seconds);
+  }
+
   const taskValue = watch("task");
   const minutesAmountValue = watch("minutesAmount");
   const isSubmitDisable = !taskValue || !minutesAmountValue;
@@ -77,9 +105,17 @@ export function Home() {
     <HomeContainer>
       <form id="formTask" onSubmit={handleSubmit(handleSubmitNewTask)}>
         <TaskContext.Provider
-          value={{ activeTask, activeTaskID, markCurrentTaskAsFinished }}
+          value={{
+            activeTask,
+            activeTaskID,
+            markCurrentTaskAsFinished,
+            secondsPassed,
+            setAmountSecondsPassed,
+          }}
         >
-          <NewTaskForm />
+          <FormProvider {...newTaskForm}>
+            <NewTaskForm />
+          </FormProvider>
 
           <Countdown />
         </TaskContext.Provider>

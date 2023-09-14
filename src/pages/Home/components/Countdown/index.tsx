@@ -1,11 +1,16 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { CountdownContainer, Separator } from "./styles";
 import { differenceInSeconds } from "date-fns";
 import { TaskContext } from "../..";
 
 export function Countdown() {
-  const { activeTask, activeTaskID, markCurrentTaskAsFinished } = useContext(TaskContext);
-  const [secondsPassed, setSecondsPassed] = useState(0);
+  const {
+    activeTask,
+    activeTaskID,
+    markCurrentTaskAsFinished,
+    secondsPassed,
+    setAmountSecondsPassed,
+  } = useContext(TaskContext);
   const totalSeconds = activeTask ? activeTask.minutesAmount * 60 : 0;
 
   const currentSeconds = activeTask ? totalSeconds - secondsPassed : 0;
@@ -22,7 +27,7 @@ export function Countdown() {
         if (secondsDiferrence > totalSeconds) {
           markCurrentTaskAsFinished();
         } else {
-          setSecondsPassed(secondsDiferrence);
+          setAmountSecondsPassed(secondsDiferrence);
         }
       }, 1000);
     }
@@ -30,7 +35,13 @@ export function Countdown() {
     return () => {
       clearInterval(intervalID);
     };
-  }, [activeTask, totalSeconds, activeTaskID, markCurrentTaskAsFinished]);
+  }, [
+    activeTask,
+    totalSeconds,
+    activeTaskID,
+    markCurrentTaskAsFinished,
+    setAmountSecondsPassed,
+  ]);
 
   return (
     <CountdownContainer>

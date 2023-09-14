@@ -1,37 +1,16 @@
 import { FormContainer, InputMinutesAmount, InputTask } from "./styles";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as zod from "zod";
 import { useContext } from "react";
 import { TaskContext } from "../..";
-
-const formSchemaValidation = zod.object({
-  task: zod.string().min(1, "Informe a tarefa"),
-  minutesAmount: zod
-    .number()
-    .min(5, "Mínimo de tempo é 5 minutos")
-    .max(60, "Máximo de tempo é 60 minutos"),
-});
-
-type TaskProps = zod.infer<typeof formSchemaValidation>;
+import { useFormContext } from "react-hook-form";
 
 export function NewTaskForm() {
   const { activeTask } = useContext(TaskContext);
 
   const {
     register,
-    handleSubmit,
-    watch,
     formState: { errors },
-    reset,
-  } = useForm<TaskProps>({
-    resolver: zodResolver(formSchemaValidation),
-    defaultValues: {
-      task: "",
-      minutesAmount: 0,
-    },
-  });
-  
+  } = useFormContext();
+
   return (
     <FormContainer>
       <section>
