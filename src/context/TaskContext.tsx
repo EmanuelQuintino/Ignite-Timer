@@ -39,7 +39,6 @@ export function TaskContextProvider({ children }: ChildrenReactNode) {
     setArrayTasks((prevState) => [...prevState, newTask]);
     setActiveTaskID(newTask.id);
     setSecondsPassed(0);
-    // reset();
   }
 
   function stopCurrentTask() {

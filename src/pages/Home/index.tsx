@@ -40,13 +40,18 @@ export function Home() {
 
   const { handleSubmit, watch, reset } = newTaskForm;
 
+  function handleCreateNewTask(data: TaskProps) {
+    createNewTask(data);
+    reset();
+  }
+
   const taskValue = watch("task");
   const minutesAmountValue = watch("minutesAmount");
   const isSubmitDisable = !taskValue || !minutesAmountValue;
 
   return (
     <HomeContainer>
-      <form id="formTask" onSubmit={handleSubmit(createNewTask)}>
+      <form id="formTask" onSubmit={handleSubmit(handleCreateNewTask)}>
         <FormProvider {...newTaskForm}>
           <NewTaskForm />
         </FormProvider>
