@@ -1,25 +1,18 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { CountdownContainer, Separator } from "./styles";
 import { differenceInSeconds } from "date-fns";
+import { TaskContext } from "../..";
 
 export function Countdown() {
+  const { activeTask, activeTaskID, markCurrentTaskAsFinished } = useContext(TaskContext);
   const [secondsPassed, setSecondsPassed] = useState(0);
   const totalSeconds = activeTask ? activeTask.minutesAmount * 60 : 0;
 
-  useEffect(() => {
-    function handleFinishTask() {
-      setArrayTasks((prevState) =>
-        prevState.map((task) => {
-          if (task.id === activeTaskID) {
-            return { ...task, finishDate: new Date() };
-          } else {
-            return task;
-          }
-        })
-      );
-      setActiveTaskID(null);
-    }
+  const currentSeconds = activeTask ? totalSeconds - secondsPassed : 0;
+  const amountMinutes = String(Math.floor(currentSeconds / 60)).padStart(2, "0");
+  const amountSeconds = String(currentSeconds % 60).padStart(2, "0");
 
+  useEffect(() => {
     let intervalID: number;
 
     if (activeTask) {
@@ -27,7 +20,7 @@ export function Countdown() {
         const secondsDiferrence = differenceInSeconds(new Date(), activeTask.startDate);
 
         if (secondsDiferrence > totalSeconds) {
-          handleFinishTask();
+          markCurrentTaskAsFinished();
         } else {
           setSecondsPassed(secondsDiferrence);
         }
@@ -37,7 +30,7 @@ export function Countdown() {
     return () => {
       clearInterval(intervalID);
     };
-  }, [activeTask, totalSeconds, activeTaskID]);
+  }, [activeTask, totalSeconds, activeTaskID, markCurrentTaskAsFinished]);
 
   return (
     <CountdownContainer>
