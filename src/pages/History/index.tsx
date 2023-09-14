@@ -1,9 +1,12 @@
 import { useContext } from "react";
 import { BoxStatus, HistoryContainer, HistoryList } from "./style";
 import { TaskContext } from "../../context/TaskContext";
+import { formatDistanceToNow } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 export function History() {
   const { arrayTasks } = useContext(TaskContext);
+
   return (
     <HistoryContainer>
       <h1>Meu histórico</h1>
@@ -18,41 +21,33 @@ export function History() {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Tarefa</td>
-              <td>20 minutos</td>
-              <td>há 2 meses</td>
-              <td>
-                <BoxStatus statusColor="green">Concluída</BoxStatus>
-              </td>
-            </tr>
+            {arrayTasks.map((task) => {
+              return (
+                <tr key={task.id}>
+                  <td>{task.task}</td>
+                  <td>{task.minutesAmount} minutos</td>
+                  <td>
+                    {formatDistanceToNow(task.startDate, {
+                      addSuffix: true,
+                      locale: ptBR,
+                    })}
+                  </td>
+                  <td>
+                    {task.finishDate && (
+                      <BoxStatus statusColor="green">Concluída</BoxStatus>
+                    )}
 
-            <tr>
-              <td>Tarefa</td>
-              <td>20 minutos</td>
-              <td>há 2 meses</td>
-              <td>
-                <BoxStatus statusColor="yellow">Em andamento</BoxStatus>
-              </td>
-            </tr>
+                    {task.stopDate && (
+                      <BoxStatus statusColor="red">Interrompido</BoxStatus>
+                    )}
 
-            <tr>
-              <td>Tarefa</td>
-              <td>20 minutos</td>
-              <td>há 2 meses</td>
-              <td>
-                <BoxStatus statusColor="red">Interrompido</BoxStatus>
-              </td>
-            </tr>
-
-            <tr>
-              <td>Tarefa</td>
-              <td>20 minutos</td>
-              <td>há 2 meses</td>
-              <td>
-                <BoxStatus statusColor="green">Concluída</BoxStatus>
-              </td>
-            </tr>
+                    {!task.finishDate && !task.stopDate && (
+                      <BoxStatus statusColor="yellow">Em andamendo</BoxStatus>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </HistoryList>
