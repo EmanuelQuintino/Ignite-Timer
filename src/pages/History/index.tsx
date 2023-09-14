@@ -1,6 +1,9 @@
+import { useContext } from "react";
 import { BoxStatus, HistoryContainer, HistoryList } from "./style";
+import { TaskContext } from "../../context/TaskContext";
 
 export function History() {
+  const { arrayTasks } = useContext(TaskContext);
   return (
     <HistoryContainer>
       <h1>Meu histórico</h1>

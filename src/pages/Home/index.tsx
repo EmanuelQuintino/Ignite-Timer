@@ -1,13 +1,14 @@
 import { HomeContainer, StartCountdownButton, StopCountdownButton } from "./style";
 import { HandPalm, Play } from "phosphor-react";
-import { useState, createContext } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
 import { NewTaskForm } from "./components/NewTaskForm";
 import { Countdown } from "./components/Countdown";
+import { useContext } from "react";
+import { TaskContext } from "../../context/TaskContext";
 
-type NewTaskProps = {
+export type NewTaskProps = {
   id: string;
   task: string;
   minutesAmount: number;
@@ -16,30 +17,18 @@ type NewTaskProps = {
   finishDate?: Date;
 };
 
-type TaskContextTypes = {
-  activeTask: NewTaskProps | undefined;
-  activeTaskID: string | null;
-  markCurrentTaskAsFinished: () => void;
-  secondsPassed: number;
-  setAmountSecondsPassed: (seconds: number) => void;
-};
+const formSchemaValidation = zod.object({
+  task: zod.string().min(1, "Informe a tarefa"),
+  minutesAmount: zod
+    .number()
+    .min(5, "Mínimo de tempo é 5 minutos")
+    .max(60, "Máximo de tempo é 60 minutos"),
+});
 
-export const TaskContext = createContext({} as TaskContextTypes);
+type TaskProps = zod.infer<typeof formSchemaValidation>;
 
 export function Home() {
-  const [arrayTasks, setArrayTasks] = useState<NewTaskProps[]>([]);
-  const [activeTaskID, setActiveTaskID] = useState<string | null>(null);
-  const [secondsPassed, setSecondsPassed] = useState(0);
-
-  const formSchemaValidation = zod.object({
-    task: zod.string().min(1, "Informe a tarefa"),
-    minutesAmount: zod
-      .number()
-      .min(5, "Mínimo de tempo é 5 minutos")
-      .max(60, "Máximo de tempo é 60 minutos"),
-  });
-
-  type TaskProps = zod.infer<typeof formSchemaValidation>;
+  const { activeTask, createNewTask, stopCurrentTask } = useContext(TaskContext);
 
   const newTaskForm = useForm<TaskProps>({
     resolver: zodResolver(formSchemaValidation),
@@ -51,77 +40,21 @@ export function Home() {
 
   const { handleSubmit, watch, reset } = newTaskForm;
 
-  function handleSubmitNewTask(data: TaskProps) {
-    const newTask: NewTaskProps = {
-      id: String(new Date().getTime()),
-      task: data.task,
-      minutesAmount: data.minutesAmount,
-      startDate: new Date(),
-    };
-
-    setArrayTasks((prevState) => [...prevState, newTask]);
-    setActiveTaskID(newTask.id);
-    setSecondsPassed(0);
-    reset();
-  }
-
-  function handleStopTask() {
-    setArrayTasks((prevState) =>
-      prevState.map((task) => {
-        if (task.id === activeTaskID) {
-          return { ...task, stopDate: new Date() };
-        } else {
-          return task;
-        }
-      })
-    );
-    setActiveTaskID(null);
-  }
-
-  function markCurrentTaskAsFinished() {
-    setArrayTasks((prevState) =>
-      prevState.map((task) => {
-        if (task.id === activeTaskID) {
-          return { ...task, finishDate: new Date() };
-        } else {
-          return task;
-        }
-      })
-    );
-    setActiveTaskID(null);
-  }
-
-  function setAmountSecondsPassed(seconds: number) {
-    setSecondsPassed(seconds);
-  }
-
   const taskValue = watch("task");
   const minutesAmountValue = watch("minutesAmount");
   const isSubmitDisable = !taskValue || !minutesAmountValue;
 
-  const activeTask = arrayTasks.find((task) => task.id === activeTaskID);
-
   return (
     <HomeContainer>
-      <form id="formTask" onSubmit={handleSubmit(handleSubmitNewTask)}>
-        <TaskContext.Provider
-          value={{
-            activeTask,
-            activeTaskID,
-            markCurrentTaskAsFinished,
-            secondsPassed,
-            setAmountSecondsPassed,
-          }}
-        >
-          <FormProvider {...newTaskForm}>
-            <NewTaskForm />
-          </FormProvider>
+      <form id="formTask" onSubmit={handleSubmit(createNewTask)}>
+        <FormProvider {...newTaskForm}>
+          <NewTaskForm />
+        </FormProvider>
 
-          <Countdown />
-        </TaskContext.Provider>
+        <Countdown />
 
         {activeTask ? (
-          <StopCountdownButton type="button" onClick={handleStopTask}>
+          <StopCountdownButton type="button" onClick={stopCurrentTask}>
             <HandPalm size={24} />
             Interromper
           </StopCountdownButton>
