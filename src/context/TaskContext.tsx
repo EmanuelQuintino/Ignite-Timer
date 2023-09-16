@@ -31,29 +31,40 @@ export const TaskContext = createContext({} as TaskContextTypes);
 export function TaskContextProvider({ children }: ChildrenReactNode) {
   const [tasksState, dispatch] = useReducer(
     (state: TaskState, action: any) => {
-      if (action.type === "CREATE_NEW_TASK") {
-        return {
-          ...state,
-          activeTaskID: action.payload.newTask.id,
-          arrayTasks: [...state.arrayTasks, action.payload.newTask],
-        };
+      switch (action.type) {
+        case "CREATE_NEW_TASK":
+          return {
+            ...state,
+            activeTaskID: action.payload.newTask.id,
+            arrayTasks: [...state.arrayTasks, action.payload.newTask],
+          };
+        case "STOP_CURRENT_TASK":
+          return {
+            ...state,
+            activeTaskID: null,
+            arrayTasks: state.arrayTasks.map((task) => {
+              if (task.id === state.activeTaskID) {
+                return { ...task, stopDate: new Date() };
+              } else {
+                return task;
+              }
+            }),
+          };
+        case "MARK_CURRENT_TASK_AS_FINISHED":
+          return {
+            ...state,
+            activeTaskID: null,
+            arrayTasks: state.arrayTasks.map((task) => {
+              if (task.id === state.activeTaskID) {
+                return { ...task, finishDate: new Date() };
+              } else {
+                return task;
+              }
+            }),
+          };
+        default:
+          return state;
       }
-
-      if (action.type === "STOP_CURRENT_TASK") {
-        return {
-          ...state,
-          activeTaskID: null,
-          arrayTasks: state.arrayTasks.map((task) => {
-            if (task.id === state.activeTaskID) {
-              return { ...task, stopDate: new Date() };
-            } else {
-              return task;
-            }
-          }),
-        };
-      }
-
-      return state;
     },
     {
       arrayTasks: [],
@@ -98,17 +109,6 @@ export function TaskContextProvider({ children }: ChildrenReactNode) {
         activeTaskID,
       },
     });
-
-    // setArrayTasks((prevState) =>
-    //   prevState.map((task) => {
-    //     if (task.id === activeTaskID) {
-    //       return { ...task, finishDate: new Date() };
-    //     } else {
-    //       return task;
-    //     }
-    //   })
-    // );
-    setActiveTaskID(null);
   }
 
   function setAmountSecondsPassed(seconds: number) {
