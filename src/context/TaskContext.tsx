@@ -1,5 +1,6 @@
 import { ReactNode, createContext, useReducer, useState } from "react";
 import { NewTaskProps } from "../pages/Home";
+import { ActionTypes, TaskReducers } from "../reducers/Tasks";
 
 type TaskProps = {
   task: string;
@@ -21,56 +22,13 @@ type ChildrenReactNode = {
   children: ReactNode;
 };
 
-type TaskState = {
-  arrayTasks: NewTaskProps[];
-  activeTaskID: string | null;
-};
-
 export const TaskContext = createContext({} as TaskContextTypes);
 
 export function TaskContextProvider({ children }: ChildrenReactNode) {
-  const [tasksState, dispatch] = useReducer(
-    (state: TaskState, action: any) => {
-      switch (action.type) {
-        case "CREATE_NEW_TASK":
-          return {
-            ...state,
-            activeTaskID: action.payload.newTask.id,
-            arrayTasks: [...state.arrayTasks, action.payload.newTask],
-          };
-        case "STOP_CURRENT_TASK":
-          return {
-            ...state,
-            activeTaskID: null,
-            arrayTasks: state.arrayTasks.map((task) => {
-              if (task.id === state.activeTaskID) {
-                return { ...task, stopDate: new Date() };
-              } else {
-                return task;
-              }
-            }),
-          };
-        case "MARK_CURRENT_TASK_AS_FINISHED":
-          return {
-            ...state,
-            activeTaskID: null,
-            arrayTasks: state.arrayTasks.map((task) => {
-              if (task.id === state.activeTaskID) {
-                return { ...task, finishDate: new Date() };
-              } else {
-                return task;
-              }
-            }),
-          };
-        default:
-          return state;
-      }
-    },
-    {
-      arrayTasks: [],
-      activeTaskID: null,
-    }
-  );
+  const [tasksState, dispatch] = useReducer(TaskReducers, {
+    arrayTasks: [],
+    activeTaskID: null,
+  });
 
   const [secondsPassed, setSecondsPassed] = useState(0);
   const { arrayTasks, activeTaskID } = tasksState;
@@ -84,7 +42,7 @@ export function TaskContextProvider({ children }: ChildrenReactNode) {
     };
 
     dispatch({
-      type: "CREATE_NEW_TASK",
+      type: ActionTypes.CREATE_NEW_TASK,
       payload: {
         newTask,
       },
@@ -95,7 +53,7 @@ export function TaskContextProvider({ children }: ChildrenReactNode) {
 
   function stopCurrentTask() {
     dispatch({
-      type: "STOP_CURRENT_TASK",
+      type: ActionTypes.STOP_CURRENT_TASK,
       payload: {
         activeTaskID,
       },
@@ -104,7 +62,7 @@ export function TaskContextProvider({ children }: ChildrenReactNode) {
 
   function markCurrentTaskAsFinished() {
     dispatch({
-      type: "MARK_CURRENT_TASK_AS_FINISHED",
+      type: ActionTypes.MARK_CURRENT_TASK_AS_FINISHED,
       payload: {
         activeTaskID,
       },
