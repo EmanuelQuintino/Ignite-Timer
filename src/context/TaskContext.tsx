@@ -1,4 +1,4 @@
-import { ReactNode, createContext, useState } from "react";
+import { ReactNode, createContext, useReducer, useState } from "react";
 import { NewTaskProps } from "../pages/Home";
 
 type TaskProps = {
@@ -24,7 +24,14 @@ type ChildrenReactNode = {
 export const TaskContext = createContext({} as TaskContextTypes);
 
 export function TaskContextProvider({ children }: ChildrenReactNode) {
-  const [arrayTasks, setArrayTasks] = useState<NewTaskProps[]>([]);
+  const [arrayTasks, dispatch] = useReducer((state: NewTaskProps[], action: any) => {
+    if (action.type === "CREATE_NEW_TASK") {
+      return [...state, action.payload.newTask];
+    }
+
+    return state;
+  }, []);
+
   const [activeTaskID, setActiveTaskID] = useState<string | null>(null);
   const [secondsPassed, setSecondsPassed] = useState(0);
 
@@ -36,34 +43,56 @@ export function TaskContextProvider({ children }: ChildrenReactNode) {
       startDate: new Date(),
     };
 
-    setArrayTasks((prevState) => [...prevState, newTask]);
+    dispatch({
+      type: "CREATE_NEW_TASK",
+      payload: {
+        newTask,
+      },
+    });
+
+    // setArrayTasks((prevState) => [...prevState, newTask]);
     setActiveTaskID(newTask.id);
     setSecondsPassed(0);
   }
 
   function stopCurrentTask() {
-    setArrayTasks((prevState) =>
-      prevState.map((task) => {
-        if (task.id === activeTaskID) {
-          return { ...task, stopDate: new Date() };
-        } else {
-          return task;
-        }
-      })
-    );
+    dispatch({
+      type: "STOP_CURRENT_TASK",
+      payload: {
+        activeTaskID,
+      },
+    });
+
+    // setArrayTasks((prevState) =>
+    //   prevState.map((task) => {
+    //     if (task.id === activeTaskID) {
+    //       return { ...task, stopDate: new Date() };
+    //     } else {
+    //       return task;
+    //     }
+    //   })
+    // );
+
     setActiveTaskID(null);
   }
 
   function markCurrentTaskAsFinished() {
-    setArrayTasks((prevState) =>
-      prevState.map((task) => {
-        if (task.id === activeTaskID) {
-          return { ...task, finishDate: new Date() };
-        } else {
-          return task;
-        }
-      })
-    );
+    dispatch({
+      type: "MARK_CURRENT_TASK_AS_FINISHED",
+      payload: {
+        activeTaskID,
+      },
+    });
+
+    // setArrayTasks((prevState) =>
+    //   prevState.map((task) => {
+    //     if (task.id === activeTaskID) {
+    //       return { ...task, finishDate: new Date() };
+    //     } else {
+    //       return task;
+    //     }
+    //   })
+    // );
     setActiveTaskID(null);
   }
 
