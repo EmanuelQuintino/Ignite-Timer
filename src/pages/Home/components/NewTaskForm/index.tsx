@@ -21,7 +21,9 @@ export function NewTaskForm() {
           placeholder="Diga qual tarefa a ser realizada"
           list="taskSuggestion"
           disabled={!!activeTask}
-          {...register("task")}
+          {...register("task", {
+            required: "Campo obrigatório!",
+          })}
         />
 
         <datalist id="taskSuggestion">
@@ -31,7 +33,7 @@ export function NewTaskForm() {
           <option value="Projeto 4" />
         </datalist>
 
-        {errors.task && (
+        {errors.task && typeof errors.task.message === "string" && (
           <span role="alert" className="inputError">
             {errors.task.message}
           </span>
@@ -48,12 +50,15 @@ export function NewTaskForm() {
           max={60}
           step={5}
           disabled={!!activeTask}
-          {...register("minutesAmount", { valueAsNumber: true })}
+          {...register("minutesAmount", {
+            valueAsNumber: true,
+            required: "Campo obrigatório!",
+          })}
         />
 
         <span>minutos.</span>
 
-        {errors.minutesAmount && (
+        {errors.minutesAmount && typeof errors.minutesAmount.message === "string" && (
           <span role="alert" className="inputError">
             {errors.minutesAmount.message}
           </span>
