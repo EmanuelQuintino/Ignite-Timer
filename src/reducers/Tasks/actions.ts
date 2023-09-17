@@ -6,6 +6,26 @@ export enum ActionTypes {
   MARK_CURRENT_TASK_AS_FINISHED = "MARK_CURRENT_TASK_AS_FINISHED",
 }
 
+type CreateNewTaskAction = {
+  type: ActionTypes.CREATE_NEW_TASK;
+  payload: {
+    newTask: NewTaskProps;
+  };
+};
+
+type StopCurrentTaskAction = {
+  type: ActionTypes.STOP_CURRENT_TASK;
+};
+
+type MarkCurrentTaskAsFinishedAction = {
+  type: ActionTypes.MARK_CURRENT_TASK_AS_FINISHED;
+};
+
+export type TaskAction =
+  | CreateNewTaskAction
+  | StopCurrentTaskAction
+  | MarkCurrentTaskAsFinishedAction;
+
 export function creatNewTaskAction(newTask: NewTaskProps) {
   return {
     type: ActionTypes.CREATE_NEW_TASK,

@@ -1,13 +1,14 @@
 import { NewTaskProps } from "../../pages/Home";
 import { ActionTypes } from "./actions";
 import { produce } from "immer";
+import { TaskAction } from "./actions";
 
 type TaskState = {
   arrayTasks: NewTaskProps[];
   activeTaskID: string | null;
 };
 
-export function TaskReducers(state: TaskState, action: any) {
+export function TaskReducers(state: TaskState, action: TaskAction) {
   switch (action.type) {
     case ActionTypes.CREATE_NEW_TASK:
       return produce(state, (draft) => {

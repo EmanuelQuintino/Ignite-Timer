@@ -2,6 +2,7 @@ import { ReactNode, createContext, useEffect, useReducer, useState } from "react
 import { NewTaskProps } from "../pages/Home";
 import { TaskReducers } from "../reducers/Tasks";
 import {
+  TaskAction,
   creatNewTaskAction,
   markCurrentTaskAsFinishedAction,
   stopCurrentTaskAction,
@@ -73,11 +74,11 @@ export function TaskContextProvider({ children }: ChildrenReactNode) {
   }
 
   function stopCurrentTask() {
-    dispatch(stopCurrentTaskAction());
+    dispatch(stopCurrentTaskAction() as TaskAction);
   }
 
   function markCurrentTaskAsFinished() {
-    dispatch(markCurrentTaskAsFinishedAction());
+    dispatch(markCurrentTaskAsFinishedAction() as TaskAction);
   }
 
   function setAmountSecondsPassed(seconds: number) {
