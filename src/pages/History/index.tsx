@@ -38,11 +38,11 @@ export function History() {
                     )}
 
                     {task.stopDate && (
-                      <BoxStatus statusColor="red">Interrompido</BoxStatus>
+                      <BoxStatus statusColor="red">Interrompida</BoxStatus>
                     )}
 
                     {!task.finishDate && !task.stopDate && (
-                      <BoxStatus statusColor="yellow">Em andamendo</BoxStatus>
+                      <BoxStatus statusColor="yellow">Em andamento</BoxStatus>
                     )}
                   </td>
                 </tr>

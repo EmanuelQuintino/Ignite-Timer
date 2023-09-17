@@ -11,6 +11,9 @@
 - `React-Hook-Form`
 - `Zod`
 - `Date-fns`
+- `Context API`
+- `Reducer Pattern`
+- `Immer`
 
 ## Installation
 

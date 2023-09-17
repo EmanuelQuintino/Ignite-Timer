@@ -1,5 +1,6 @@
 import { NewTaskProps } from "../../pages/Home";
 import { ActionTypes } from "./actions";
+import { produce } from "immer";
 
 type TaskState = {
   arrayTasks: NewTaskProps[];
@@ -9,35 +10,38 @@ type TaskState = {
 export function TaskReducers(state: TaskState, action: any) {
   switch (action.type) {
     case ActionTypes.CREATE_NEW_TASK:
-      return {
-        ...state,
-        activeTaskID: action.payload.newTask.id,
-        arrayTasks: [...state.arrayTasks, action.payload.newTask],
-      };
-    case ActionTypes.STOP_CURRENT_TASK:
-      return {
-        ...state,
-        activeTaskID: null,
-        arrayTasks: state.arrayTasks.map((task) => {
-          if (task.id === state.activeTaskID) {
-            return { ...task, stopDate: new Date() };
-          } else {
-            return task;
-          }
-        }),
-      };
-    case ActionTypes.MARK_CURRENT_TASK_AS_FINISHED:
-      return {
-        ...state,
-        activeTaskID: null,
-        arrayTasks: state.arrayTasks.map((task) => {
-          if (task.id === state.activeTaskID) {
-            return { ...task, finishDate: new Date() };
-          } else {
-            return task;
-          }
-        }),
-      };
+      return produce(state, (draft) => {
+        draft.arrayTasks.push(action.payload.newTask);
+        draft.activeTaskID = action.payload.newTask.id;
+      });
+    case ActionTypes.STOP_CURRENT_TASK: {
+      const currentTaskIndex = state.arrayTasks.findIndex(
+        (task) => task.id === state.activeTaskID
+      );
+
+      if (currentTaskIndex < 0) {
+        return state;
+      }
+
+      return produce(state, (draft) => {
+        draft.activeTaskID = null;
+        draft.arrayTasks[currentTaskIndex].stopDate = new Date();
+      });
+    }
+    case ActionTypes.MARK_CURRENT_TASK_AS_FINISHED: {
+      const currentTaskIndex = state.arrayTasks.findIndex(
+        (task) => task.id === state.activeTaskID
+      );
+
+      if (currentTaskIndex < 0) {
+        return state;
+      }
+
+      return produce(state, (draft) => {
+        draft.activeTaskID = null;
+        draft.arrayTasks[currentTaskIndex].finishDate = new Date();
+      });
+    }
     default:
       return state;
   }
