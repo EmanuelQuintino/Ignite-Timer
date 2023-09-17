@@ -1,4 +1,4 @@
-import { ReactNode, createContext, useReducer, useState } from "react";
+import { ReactNode, createContext, useEffect, useReducer, useState } from "react";
 import { NewTaskProps } from "../pages/Home";
 import { TaskReducers } from "../reducers/Tasks";
 import {
@@ -6,6 +6,7 @@ import {
   markCurrentTaskAsFinishedAction,
   stopCurrentTaskAction,
 } from "../reducers/Tasks/actions";
+import { differenceInSeconds } from "date-fns";
 
 type TaskProps = {
   task: string;
@@ -30,13 +31,34 @@ type ChildrenReactNode = {
 export const TaskContext = createContext({} as TaskContextTypes);
 
 export function TaskContextProvider({ children }: ChildrenReactNode) {
-  const [tasksState, dispatch] = useReducer(TaskReducers, {
-    arrayTasks: [],
-    activeTaskID: null,
+  const [tasksState, dispatch] = useReducer(
+    TaskReducers,
+    {
+      arrayTasks: [],
+      activeTaskID: null,
+    },
+    (initialState) => {
+      const storageState = localStorage.getItem("@ignite-timer:array-tasks-1.0.0");
+      if (storageState) return JSON.parse(storageState);
+      return initialState;
+    }
+  );
+
+  const { arrayTasks, activeTaskID } = tasksState;
+  const activeTask = arrayTasks.find((task) => task.id === activeTaskID);
+
+  const [secondsPassed, setSecondsPassed] = useState(() => {
+    if (activeTask) {
+      return differenceInSeconds(new Date(), new Date(activeTask.startDate));
+    }
+
+    return 0;
   });
 
-  const [secondsPassed, setSecondsPassed] = useState(0);
-  const { arrayTasks, activeTaskID } = tasksState;
+  useEffect(() => {
+    const stateJSON = JSON.stringify(tasksState);
+    localStorage.setItem("@ignite-timer:array-tasks-1.0.0", stateJSON);
+  }, [tasksState]);
 
   function createNewTask(data: TaskProps) {
     const newTask: NewTaskProps = {
@@ -61,8 +83,6 @@ export function TaskContextProvider({ children }: ChildrenReactNode) {
   function setAmountSecondsPassed(seconds: number) {
     setSecondsPassed(seconds);
   }
-
-  const activeTask = arrayTasks.find((task) => task.id === activeTaskID);
 
   return (
     <TaskContext.Provider

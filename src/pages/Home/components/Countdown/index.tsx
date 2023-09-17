@@ -11,7 +11,7 @@ export function Countdown() {
     secondsPassed,
     setAmountSecondsPassed,
   } = useContext(TaskContext);
-  
+
   const totalSeconds = activeTask ? activeTask.minutesAmount * 60 : 0;
 
   const currentSeconds = activeTask ? totalSeconds - secondsPassed : 0;
@@ -23,7 +23,10 @@ export function Countdown() {
 
     if (activeTask) {
       intervalID = setInterval(() => {
-        const secondsDiferrence = differenceInSeconds(new Date(), activeTask.startDate);
+        const secondsDiferrence = differenceInSeconds(
+          new Date(),
+          new Date(activeTask.startDate)
+        );
 
         if (secondsDiferrence > totalSeconds) {
           markCurrentTaskAsFinished();
