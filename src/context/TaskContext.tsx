@@ -1,6 +1,11 @@
 import { ReactNode, createContext, useReducer, useState } from "react";
 import { NewTaskProps } from "../pages/Home";
-import { ActionTypes, TaskReducers } from "../reducers/Tasks";
+import { TaskReducers } from "../reducers/Tasks";
+import {
+  creatNewTaskAction,
+  markCurrentTaskAsFinishedAction,
+  stopCurrentTaskAction,
+} from "../reducers/Tasks/actions";
 
 type TaskProps = {
   task: string;
@@ -41,32 +46,16 @@ export function TaskContextProvider({ children }: ChildrenReactNode) {
       startDate: new Date(),
     };
 
-    dispatch({
-      type: ActionTypes.CREATE_NEW_TASK,
-      payload: {
-        newTask,
-      },
-    });
-
+    dispatch(creatNewTaskAction(newTask));
     setSecondsPassed(0);
   }
 
   function stopCurrentTask() {
-    dispatch({
-      type: ActionTypes.STOP_CURRENT_TASK,
-      payload: {
-        activeTaskID,
-      },
-    });
+    dispatch(stopCurrentTaskAction());
   }
 
   function markCurrentTaskAsFinished() {
-    dispatch({
-      type: ActionTypes.MARK_CURRENT_TASK_AS_FINISHED,
-      payload: {
-        activeTaskID,
-      },
-    });
+    dispatch(markCurrentTaskAsFinishedAction());
   }
 
   function setAmountSecondsPassed(seconds: number) {

@@ -1,15 +1,10 @@
-import { NewTaskProps } from "../pages/Home";
+import { NewTaskProps } from "../../pages/Home";
+import { ActionTypes } from "./actions";
 
 type TaskState = {
   arrayTasks: NewTaskProps[];
   activeTaskID: string | null;
 };
-
-export enum ActionTypes {
-  CREATE_NEW_TASK = "CREATE_NEW_TASK",
-  STOP_CURRENT_TASK = "STOP_CURRENT_TASK",
-  MARK_CURRENT_TASK_AS_FINISHED = "MARK_CURRENT_TASK_AS_FINISHED",
-}
 
 export function TaskReducers(state: TaskState, action: any) {
   switch (action.type) {
