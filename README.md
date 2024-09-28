@@ -30,6 +30,4 @@ $ npm run dev
 
 ## Links
 
-<<<<<<< HEAD
-
 - [Figma](https://www.figma.com/community/file/1127351821076435124)
